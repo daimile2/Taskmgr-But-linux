@@ -1,0 +1,1 @@
+frontend/node_modules/echo node_modules/echo frontend/dist/echo build/bin/echo *.exeecho *.bakecho *.bak_*echo .DS_Storeecho .idea/echo .vscode/

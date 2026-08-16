@@ -1,0 +1,92 @@
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+#app {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: row !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.sidebar {
+  flex: 0 0 220px !important;
+  width: 220px !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.sidebar.collapsed {
+  flex-basis: 64px !important;
+  width: 64px !important;
+}
+.sidebar .nav {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+.sidebar-footer {
+  flex: 0 0 auto !important;
+  margin-top: auto !important;
+}
+main.main {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+main.main > header.topbar,
+main.main > .topbar {
+  flex: 0 0 auto !important;
+}
+main.main > .page {
+  display: none !important;
+}
+main.main > .page.active {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+  background: #1c1c1c !important;
+}
+#page-history .page-placeholder {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 60vh !important;
+  color: #aaa !important;
+  text-align: center !important;
+}
+#page-history .placeholder-title {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  color: #ddd !important;
+}
+#page-settings .settings-scroll {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  overflow: auto !important;
+}

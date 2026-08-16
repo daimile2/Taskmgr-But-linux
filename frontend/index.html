@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>任务管理器</title>
+  <link rel="stylesheet" href="/src/style.css"/>
+  <link rel="stylesheet" href="/src/layout-fix.css"/>
+</head>
+<body>
+<div id="app">
+  <aside class="sidebar">
+            <div class="sidebar-brand">
+      <div class="brand-row-toggle">
+        <button type="button" id="btn-sidebar-toggle" class="sidebar-toggle" title="折叠/展开">
+          <img src="/src/assets/icons/class.svg" alt="菜单"/>
+        </button>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" data-page="processes">
+        <img class="nav-ico" src="/src/assets/icons/process.svg" alt=""/><span class="nav-text">进程</span></button>
+      <button class="nav-item" data-page="performance">
+        <img class="nav-ico" src="/src/assets/icons/performance.svg" alt=""/><span class="nav-text">性能</span></button>
+      <button class="nav-item" data-page="history">
+        <img class="nav-ico" src="/src/assets/icons/app-history.svg" alt=""/><span class="nav-text">应用历史记录</span></button>
+      <button class="nav-item" data-page="startup">
+        <img class="nav-ico" src="/src/assets/icons/startup.svg" alt=""/><span class="nav-text">启动应用</span></button>
+      <button class="nav-item" data-page="users">
+        <img class="nav-ico" src="/src/assets/icons/users.svg" alt=""/><span class="nav-text">用户</span></button>
+      <button class="nav-item" data-page="details">
+        <img class="nav-ico" src="/src/assets/icons/details.svg" alt=""/><span class="nav-text">详细信息</span></button>
+      <button class="nav-item" data-page="services">
+        <img class="nav-ico" src="/src/assets/icons/services.svg" alt=""/><span class="nav-text">服务</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="nav-item" data-page="settings">
+        <img class="nav-ico" src="/src/assets/icons/settings.svg" alt=""/><span class="nav-text">设置</span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="app-title">
+        <img class="app-title-icon" src="/src/assets/icons/task-icon.svg" alt=""/>
+        <span>任务管理器</span>
+      </div>
+<div class="search-wrap">
+        <img class="search-ico" src="/src/assets/icons/search.svg" alt=""/>
+        <input id="search" type="search" placeholder="键入要搜索的名称、用户或 PID"/>
+      </div>
+      
+      <div class="top-actions" id="top-actions">
+        <!-- 进程 -->
+        <div class="actions-group" data-for="processes">
+          <button id="btn-run" class="btn btn-tool" type="button">
+            <img class="btn-ico" src="/src/assets/icons/new.svg" alt=""/>运行新任务
+          </button>
+          <span class="act-sep"></span>
+          <button id="btn-end" class="btn btn-tool" type="button" disabled>
+            <img class="btn-ico" src="/src/assets/icons/stop.svg" alt=""/>结束任务
+          </button>
+          <button id="btn-efficiency" class="btn btn-tool btn-muted" type="button" title="Linux 无对应"><img class="btn-ico" src="/src/assets/icons/Efficiency.svg" alt=""/>效率模式
+          </button>
+        </div>
+        <!-- 性能 / 历史：仅运行新任务 -->
+        <div class="actions-group" data-for="performance" hidden>
+          <button class="btn btn-tool btn-run-any" type="button">
+            <img class="btn-ico" src="/src/assets/icons/new.svg" alt=""/>运行新任务
+          </button>
+        </div>
+        <div class="actions-group" data-for="history" hidden>
+          <button class="btn btn-tool btn-run-any" type="button">
+            <img class="btn-ico" src="/src/assets/icons/new.svg" alt=""/>运行新任务
+          </button>
+        </div>
+        <!-- 启动应用 -->
+        <div class="actions-group" data-for="startup" hidden>
+          <button class="btn btn-tool btn-run-any" type="button">
+            <img class="btn-ico" src="/src/assets/icons/new.svg" alt=""/>运行新任务
+          </button>
+          <span class="act-sep"></span>
+          <button id="btn-enable" class="btn btn-tool" type="button" disabled>
+            <img class="btn-ico" src="/src/assets/icons/enable.svg" alt=""/>启用
+          </button>
+          <button id="btn-disable" class="btn btn-tool" type="button" disabled>
+            <img class="btn-ico" src="/src/assets/icons/stop.svg" alt=""/>禁用
+          </button>
+          <button id="btn-startup-prop" class="btn btn-tool" type="button" disabled>
+            <img class="btn-ico" src="/src/assets/icons/attribute.svg" alt=""/>属性
+          </button>
+        </div>
+        <!-- 用户 -->
+        <div class="actions-group" data-for="users" hidden>
+          <button class="btn btn-tool btn-run-any" type="button">
+            <img class="btn-ico" src="/src/assets/icons/new.svg" alt=""/>运行新任务
+          </button>
+          <span class="act-sep"></span>
+          <button id="btn-disconnect" class="btn btn-tool" type="button" disabled>断开连接</button>
+          <button class="btn btn-tool" type="button" disabled title="Linux 上保留但不启用">管理用户帐户</button>
+        </div>
+        <!-- 详细信息 -->
+        <div class="actions-group" data-for="details" hidden>
+          <button class="btn btn-tool btn-run-any" type="button">
+            <img class="btn-ico" src="/src/assets/icons/new.svg" alt=""/>运行新任务
+          </button>
+          <span class="act-sep"></span>
+          <button id="btn-end-details" class="btn btn-tool" type="button" disabled>
+            <img class="btn-ico" src="/src/assets/icons/stop.svg" alt=""/>结束任务
+          </button>
+        </div>
+        <!-- 服务：空壳 -->
+        <div class="actions-group" data-for="services" hidden>
+          <button id="btn-svc-start" class="btn btn-tool" type="button" disabled>开始</button>
+          <button id="btn-svc-stop" class="btn btn-tool" type="button" disabled>停止</button>
+          <button id="btn-svc-restart" class="btn btn-tool" type="button" disabled>重新启动</button>
+        </div>
+        <!-- 设置：右侧无按钮 -->
+        <div class="actions-group" data-for="settings" hidden></div>
+      </div>
+
+    </header>
+
+    <section id="page-processes" class="page active">
+      <div class="page-title">进程</div>
+      <div class="table-wrap">
+        <table class="grid" id="tbl-proc">
+          <thead>
+          <tr>
+            <th data-sort="name">名称</th>
+            <th data-sort="state">状态</th>
+            <th data-sort="cpu">CPU</th>
+            <th data-sort="memory">内存</th>
+            <th data-sort="user">用户</th>
+            <th data-sort="pid">PID</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-performance" class="page">
+      <div class="perf-layout">
+        <div class="perf-list" id="perf-cards"></div>
+        <div class="perf-detail">
+          <div class="perf-detail-head">
+            <div>
+              <div class="perf-big-label" id="perf-title">CPU</div>
+              <div class="perf-sub" id="perf-model"></div>
+            </div>
+            <div class="perf-big-value"><span id="perf-value">0</span>%</div>
+          </div>
+          <canvas id="perf-chart" width="640" height="220"></canvas>
+          <div class="perf-meta" id="perf-meta"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-startup" class="page">
+      <div class="page-title-row">
+        <div class="page-title">启动应用</div>
+        <div class="top-actions">
+          <button id="btn-enable" class="btn" disabled>启用</button>
+          <button id="btn-disable" class="btn" disabled>禁用</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="grid" id="tbl-startup">
+          <thead>
+          <tr><th>名称</th><th>状态</th><th>命令</th><th>路径</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-users" class="page">
+      <div class="page-title">用户</div>
+      <div class="table-wrap">
+        <table class="grid" id="tbl-users">
+          <thead>
+          <tr><th>用户</th><th>进程数</th><th>CPU</th><th>内存</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-details" class="page">
+      <div class="page-title">详细信息</div>
+      <div class="table-wrap">
+        <table class="grid" id="tbl-details">
+          <thead>
+          <tr>
+            <th>名称</th><th>PID</th><th>状态</th><th>用户名</th>
+            <th>CPU</th><th>内存</th><th>描述</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-history" class="page">
+      <div class="page-title">应用历史记录</div>
+      <div class="page-placeholder">
+        <p class="placeholder-title">不可用</p>
+        <p class="placeholder-desc">Linux 下没有与 Windows「应用历史记录」对等的系统接口，此页暂不可用。</p>
+      </div>
+    </section>
+
+    
+    <section id="page-services" class="page">
+      <div class="page-title">服务</div>
+      <div class="table-wrap">
+        <table class="grid" id="tbl-services">
+          <thead>
+            <tr><th>名称</th><th>PID</th><th>描述</th><th>状态</th><th>组</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+<section id="page-settings" class="page">
+  <div class="page-title">设置</div>
+  <div class="settings-scroll">
+    <div class="settings-section">
+      <div class="settings-label">应用主题</div>
+      <label class="settings-radio"><input type="radio" name="theme" value="light"> 浅色</label>
+      <label class="settings-radio"><input type="radio" name="theme" value="dark"> 深色</label>
+      <label class="settings-radio"><input type="radio" name="theme" value="system" checked> 使用系统设置</label>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">默认起始页</div>
+      <select id="set-start-page" class="settings-select">
+        <option value="processes">进程</option>
+        <option value="performance">性能</option>
+        <option value="startup">启动应用</option>
+        <option value="users">用户</option>
+        <option value="details">详细信息</option>
+        <option value="services">服务</option>
+      </select>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">实时更新速度</div>
+      <select id="set-refresh-rate" class="settings-select">
+        <option value="high">高 (0.5 秒)</option>
+        <option value="normal" selected>常规 (1 秒)</option>
+        <option value="low">低 (2 秒)</option>
+        <option value="paused">暂停</option>
+      </select>
+    </div>
+    <div class="settings-section">
+      <div class="settings-hint">始终在其他打开的窗口顶部显示任务管理器</div>
+      <label class="settings-check"><input type="checkbox" id="set-always-on-top"> 置于顶层</label>
+      <label class="settings-check"><input type="checkbox" id="set-minimize-use" checked> 使用时最小化</label>
+      <label class="settings-check"><input type="checkbox" id="set-minimize-hide"> 最小化时隐藏</label>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">其他选项</div>
+      <label class="settings-check"><input type="checkbox" id="set-full-username"> 显示完整帐户名</label>
+      <label class="settings-check"><input type="checkbox" id="set-history-all"> 显示所有进程的历史记录</label>
+      <label class="settings-check"><input type="checkbox" id="set-eff-confirm" checked> 应用效率模式前询问我</label>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">实时内核内存转储选项(高级)</div>
+      <label class="settings-check"><input type="checkbox" id="set-dump-abort" checked> 如果内存不足，则中止</label>
+      <label class="settings-check"><input type="checkbox" id="set-dump-vm"> 捕获虚拟机监控程序页面</label>
+      <label class="settings-check nested"><input type="checkbox" id="set-dump-vm-extra" disabled> 包括非必要页面</label>
+      <label class="settings-check"><input type="checkbox" id="set-dump-user"> 捕获用户页面</label>
+    </div>
+  </div>
+</section>
+
+
+  </main>
+</div>
+
+<dialog id="dlg-run">
+  <form method="dialog" class="dlg">
+    <h3>创建新任务</h3>
+    <p>键入命令（将通过 sh -c 启动）：</p>
+    <input id="run-cmd" type="text" placeholder="例如：gedit 或 firefox"/>
+    <div class="dlg-actions">
+      <button value="cancel" class="btn">取消</button>
+      <button value="ok" class="btn btn-primary" id="run-ok">确定</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module" src="/src/main.js"></script>
+
+<dialog id="dlg-props">
+  <form method="dialog" class="dlg">
+    <h3>进程属性</h3>
+    <pre id="props-body" style="white-space:pre-wrap;font-size:12px;max-height:360px;overflow:auto;background:#1e1e1e;padding:10px;border-radius:6px;"></pre>
+    <div class="dlg-actions">
+      <button value="ok" class="btn btn-primary">关闭</button>
+    </div>
+  </form>
+</dialog>
+
+
+<div id="proc-ctx" role="menu">
+  <button type="button" data-act="end">结束任务(E)</button>
+  <div class="menu-item has-sub">
+    <button type="button" class="sub-toggle">资源值(V) <span class="arrow">›</span></button>
+    <div class="submenu" id="proc-res-sub">
+      <div class="menu-item has-sub">
+        <button type="button" class="sub-toggle">内存(M) <span class="arrow">›</span></button>
+        <div class="submenu">
+          <button type="button" data-act="res" data-res="mem" data-mode="pct">百分比</button>
+          <button type="button" data-act="res" data-res="mem" data-mode="val">值</button>
+        </div>
+      </div>
+      <div class="menu-item has-sub">
+        <button type="button" class="sub-toggle">磁盘(K) <span class="arrow">›</span></button>
+        <div class="submenu">
+          <button type="button" data-act="res" data-res="disk" data-mode="pct">百分比</button>
+          <button type="button" data-act="res" data-res="disk" data-mode="val">值</button>
+        </div>
+      </div>
+      <div class="menu-item has-sub">
+        <button type="button" class="sub-toggle">网络(N) <span class="arrow">›</span></button>
+        <div class="submenu">
+          <button type="button" data-act="res" data-res="net" data-mode="pct">百分比</button>
+          <button type="button" data-act="res" data-res="net" data-mode="val">值</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="button" disabled>提供反馈(B)</button>
+  <div class="sep"></div>
+  <button type="button" data-act="efficiency">效率模式(M)</button>
+  <button type="button" data-act="dump">创建内存转储文件(C)</button>
+  <div class="sep"></div>
+  <button type="button" data-act="details">转到详细信息(G)</button>
+  <button type="button" data-act="open-path">打开文件所在的位置(O)</button>
+  <button type="button" data-act="search">在线搜索(S)</button>
+  <button type="button" data-act="props">属性(I)</button>
+</div>
+
+<div id="perf-ctx" role="menu">
+  <button type="button" data-pact="summary"><span class="chk" data-chk="summary"></span>摘要视图(W)</button>
+  <button type="button" data-pact="hide-graph"><span class="chk" data-chk="hide-graph"></span><span data-label-hide>隐藏图形(H)</span></button>
+  <div class="sep"></div>
+  <button type="button" data-pact="copy">复制(C)</button>
+</div>
+
+<div id="perf-detail-ctx">
+  <button type="button" data-dact="graph-summary"><span class="chk" id="chk-graph-summary"></span>图形摘要视图(W)</button>
+  <div class="menu-item has-sub">
+    <button type="button" class="sub-toggle" type="button">查看(V) <span class="arrow">›</span></button>
+    <div class="submenu" id="perf-view-sub"></div>
+  </div>
+  <div class="sep"></div>
+  <button type="button" data-dact="copy">复制(C)</button>
+</div>
+
+<div id="startup-ctx">
+  <button type="button" data-sact="toggle" id="startup-ctx-toggle">禁用(D)</button>
+  <div class="sep"></div>
+  <button type="button" data-sact="open-path">打开文件所在的位置(O)</button>
+  <button type="button" data-sact="search">在线搜索(S)</button>
+  <button type="button" data-sact="props">属性(I)</button>
+</div>
+
+<div id="user-ctx">
+  <button type="button" data-uact="expand">折叠(P)</button>
+  <button type="button" data-uact="disconnect">断开连接(D)</button>
+  <div class="sep"></div>
+  <button type="button" data-uact="manage" disabled title="Linux 上无统一账户权限页">管理用户帐户(M)</button>
+</div>
+
+<div id="details-ctx">
+  <button type="button" data-dact="end">结束任务(E)</button>
+  <button type="button" data-dact="end-tree">结束进程树(T)</button>
+  <button type="button" disabled>提供反馈(B)</button>
+  <div class="sep"></div>
+  <button type="button" data-dact="efficiency">效率模式(M)</button>
+  <div class="menu-item has-sub">
+    <button type="button" class="sub-toggle">设置优先级(P) <span class="arrow">›</span></button>
+    <div class="submenu" id="details-nice-sub">
+      <button type="button" data-dact="nice" data-nice="-20">实时/最高 (-20)</button>
+      <button type="button" data-dact="nice" data-nice="-10">高于正常 (-10)</button>
+      <button type="button" data-dact="nice" data-nice="0">正常 (0)</button>
+      <button type="button" data-dact="nice" data-nice="10">低于正常 (10)</button>
+      <button type="button" data-dact="nice" data-nice="19">空闲 (19)</button>
+    </div>
+  </div>
+  <div class="menu-item has-sub">
+    <button type="button" class="sub-toggle">设置相关性(F) <span class="arrow">›</span></button>
+    <div class="submenu">
+      <button type="button" data-dact="aff" data-aff="0">仅 CPU 0</button>
+      <button type="button" data-dact="aff" data-aff="0-1">CPU 0-1</button>
+      <button type="button" data-dact="aff" data-aff="all">全部 CPU</button>
+    </div>
+  </div>
+  <div class="sep"></div>
+  <button type="button" disabled>分析等待链(A)</button>
+  <button type="button" disabled>UAC 虚拟化(V)</button>
+  <button type="button" data-dact="dump">创建内存转储文件(C)</button>
+  <div class="sep"></div>
+  <button type="button" data-dact="open-path">打开文件所在的位置(O)</button>
+  <button type="button" data-dact="search">在线搜索(N)</button>
+  <button type="button" data-dact="props">属性(R)</button>
+  <button type="button" disabled>转到服务(S)</button>
+</div>
+
+<div id="svc-ctx">
+  <button type="button" data-svact="start">开始(S)</button>
+  <button type="button" data-svact="stop">停止(T)</button>
+  <button type="button" data-svact="restart">重新启动(R)</button>
+  <div class="sep"></div>
+  <button type="button" data-svact="open">打开服务(V)</button>
+  <button type="button" data-svact="search">在线搜索(O)</button>
+  <button type="button" data-svact="details">转到详细信息(D)</button>
+</div>
+</body>
+</html>
