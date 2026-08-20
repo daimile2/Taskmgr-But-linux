@@ -119,4 +119,5 @@ export const api = {
   services: listServices,    // services.js → api.services()
   enableStartup: setStartupEnabled,
   startupEnable: setStartupEnabled,
+  setStartup: setStartupEnabled,
 };

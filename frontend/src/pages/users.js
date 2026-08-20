@@ -154,7 +154,7 @@ function procCtx(e, p) {
     } else if (id === "details") {
       document.querySelector('.nav-item[data-page="details"]')?.click();
     } else if (id === "search") {
-      window.open("https://www.bing.com/search?q=" + encodeURIComponent(p.name), "_blank");
+      window.open("https://www.bing.com/search?q=" + encodeURIComponent(p.name || ""), "_blank");
     } else if (id === "props") {
       alert(`名称: ${p.name}\nPID: ${p.pid}\n用户: ${p.user}\nCPU: ${(p.cpu||0).toFixed(1)}%\n内存: ${fmtBytes(p.memory)}`);
     }
@@ -269,6 +269,8 @@ function render() {
         cr.addEventListener("click", () => {
           selectedPid = p.pid;
           selectedUser = u.name;
+          const btn = document.getElementById("btn-disconnect");
+          if (btn) btn.disabled = true; // 选中的是进程，断开连接不可用
           tb.querySelectorAll("tr").forEach((r) => r.classList.remove("selected"));
           cr.classList.add("selected");
         });

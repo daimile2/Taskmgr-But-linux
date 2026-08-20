@@ -12,6 +12,21 @@ let hideGraphsOn = false;
 let summaryHidden = false; // 性能页签摘要 → 仅标题栏
 let graphSummaryHidden = false; // 折线摘要 → 仅标题+页头
 
+function buildCopyText() {
+  const lines = [];
+  const title = document.getElementById("perf-title")?.textContent?.trim() || "";
+  if (title) lines.push(title);
+  const model = document.getElementById("perf-right-top")?.textContent?.trim();
+  if (model) lines.push(model);
+  document.querySelectorAll("#perf-meta .meta-cell").forEach((cell) => {
+    const lab = cell.querySelector(".meta-lab")?.textContent?.trim() || "";
+    const val = cell.querySelector(".meta-val")?.textContent?.trim() || "";
+    if (lab) lines.push(lab + (val ? " " + val : ""));
+    else if (val) lines.push(val);
+  });
+  return lines.join("\n");
+}
+
 function ensureDom() {
   const host = document.getElementById("page-performance");
   if (!host) return;
@@ -276,10 +291,12 @@ export function activate() {
           if (id === "summary") applySummary(!summaryOn);
           if (id === "hide-graphs") applyHideGraphs(!hideGraphsOn);
           if (id === "copy") {
+            // 先选中该卡片再复制完整详情（与右侧 meta 一致）
             const card = e.target.closest(".perf-card");
-            const lab = card?.querySelector(".label")?.textContent || "";
-            const val = card?.querySelector(".value")?.textContent || "";
-            navigator.clipboard?.writeText((lab + "\n" + val).trim());
+            card?.click();
+            setTimeout(() => {
+              navigator.clipboard?.writeText(buildCopyText()).catch(() => {});
+            }, 50);
           }
         });
         return;
@@ -294,6 +311,9 @@ export function activate() {
         ], (id) => {
           if (id === "graph-summary") applyGraphSummary(!graphSummaryOn);
           if (id === "summary") applySummary(!summaryOn);
+          if (id === "copy") {
+            navigator.clipboard?.writeText(buildCopyText()).catch(() => {});
+          }
         });
       }
     });

@@ -64,9 +64,11 @@ func List() []App {
 	return out
 }
 
-// SetEnabled toggles Hidden= in the desktop file.
+// SetEnabled toggles Hidden= and X-GNOME-Autostart-enabled= in the desktop file.
 func SetEnabled(path string, enabled bool) string {
-	if path == "" || !strings.HasPrefix(path, autostartDir()) {
+	path = filepath.Clean(path)
+	dir := filepath.Clean(autostartDir())
+	if path == "" || !strings.HasPrefix(path, dir) {
 		return "路径无效"
 	}
 	b, err := os.ReadFile(path)
@@ -74,20 +76,29 @@ func SetEnabled(path string, enabled bool) string {
 		return err.Error()
 	}
 	lines := strings.Split(string(b), "\n")
-	found := false
-	want := "Hidden=false"
+	wantHidden := "Hidden=false"
+	wantGnome := "X-GNOME-Autostart-enabled=true"
 	if !enabled {
-		want = "Hidden=true"
+		wantHidden = "Hidden=true"
+		wantGnome = "X-GNOME-Autostart-enabled=false"
 	}
+	foundH, foundG := false, false
 	for i, line := range lines {
 		t := strings.TrimSpace(line)
 		if strings.HasPrefix(t, "Hidden=") {
-			lines[i] = want
-			found = true
+			lines[i] = wantHidden
+			foundH = true
+		}
+		if strings.HasPrefix(t, "X-GNOME-Autostart-enabled=") {
+			lines[i] = wantGnome
+			foundG = true
 		}
 	}
-	if !found {
-		lines = append(lines, want)
+	if !foundH {
+		lines = append(lines, wantHidden)
+	}
+	if !foundG {
+		lines = append(lines, wantGnome)
 	}
 	if err := os.WriteFile(path, []byte(strings.Join(lines, "\n")), 0644); err != nil {
 		return err.Error()

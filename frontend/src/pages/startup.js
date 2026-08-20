@@ -131,13 +131,17 @@ function render() {
         { id: "props", label: "属性(I)" },
       ], async (id) => {
         if (id === "toggle") {
-          await api.setStartup(a.path, !a.enabled);
+          const next = !a.enabled;
+          a.enabled = next;
+          selectedPath = a.path;
+          syncBtns(next);
+          await (api.setStartup || api.setStartupEnabled)(a.path, next);
           await refresh();
         } else if (id === "open") {
           const dir = (a.path || "").replace(/\/[^/]+$/, "") || "/";
           window.open("file://" + dir);
         } else if (id === "search") {
-          window.open("https://www.bing.com/search?q=" + encodeURIComponent(a.name), "_blank");
+          onlineSearch(a.name);
         } else if (id === "props") {
           alert(`名称: ${a.name}\n状态: ${a.enabled ? "已启用" : "已禁用"}\n命令: ${a.exec}\n路径: ${a.path}`);
         }
@@ -149,8 +153,22 @@ function render() {
 function syncBtns(enabled) {
   const en = document.getElementById("btn-enable");
   const dis = document.getElementById("btn-disable");
+  const props = document.getElementById("btn-props-start");
   if (en) en.disabled = !!enabled || !selectedPath;
   if (dis) dis.disabled = !enabled || !selectedPath;
+  // 属性：有选中就不灰（与右键属性一致）
+  if (props) props.disabled = !selectedPath;
+}
+
+function showProps(a) {
+  if (!a) return;
+  alert(`名称: ${a.name}\n状态: ${a.enabled ? "已启用" : "已禁用"}\n命令: ${a.exec}\n路径: ${a.path}`);
+}
+
+function onlineSearch(name) {
+  const q = (name || "").trim();
+  if (!q) return;
+  window.open("https://www.bing.com/search?q=" + encodeURIComponent(q), "_blank");
 }
 
 export function activate() {
@@ -175,13 +193,45 @@ export function activate() {
   /* top actions with icons already set */
   document.getElementById("btn-enable")?.addEventListener("click", async () => {
     if (!selectedPath) return;
-    await api.setStartup(selectedPath, true);
+    const path = selectedPath;
+    // 立刻切换按钮灰态，不必再点列表
+    const row = rows.find((x) => x.path === path);
+    if (row) row.enabled = true;
+    syncBtns(true);
+    try {
+      await (api.setStartup || api.setStartupEnabled)(path, true);
+    } catch (e) {
+      if (row) row.enabled = false;
+      syncBtns(false);
+      console.error(e);
+    }
     await refresh();
+    // refresh 后保持选中并同步按钮
+    selectedPath = path;
+    const again = rows.find((x) => x.path === path);
+    syncBtns(again ? !!again.enabled : true);
   });
   document.getElementById("btn-disable")?.addEventListener("click", async () => {
     if (!selectedPath) return;
-    await api.setStartup(selectedPath, false);
+    const path = selectedPath;
+    const row = rows.find((x) => x.path === path);
+    if (row) row.enabled = false;
+    syncBtns(false);
+    try {
+      await (api.setStartup || api.setStartupEnabled)(path, false);
+    } catch (e) {
+      if (row) row.enabled = true;
+      syncBtns(true);
+      console.error(e);
+    }
     await refresh();
+    selectedPath = path;
+    const again = rows.find((x) => x.path === path);
+    syncBtns(again ? !!again.enabled : false);
+  });
+  document.getElementById("btn-props-start")?.addEventListener("click", () => {
+    const a = rows.find((x) => x.path === selectedPath);
+    showProps(a);
   });
   refresh();
 
@@ -204,7 +254,7 @@ export function activate() {
           const dir = (a.path || "").replace(/\/[^/]+$/, "") || "/";
           window.open("file://" + dir);
         } else if (id === "search" && a) {
-          window.open("https://www.bing.com/search?q=" + encodeURIComponent(a.name), "_blank");
+          onlineSearch(a.name);
         }
       });
     });
@@ -212,8 +262,24 @@ export function activate() {
 }
 
 export async function refresh() {
+  const keep = selectedPath;
   rows = await api.startup();
   if (!Array.isArray(rows)) rows = [];
   render();
+  if (keep) {
+    selectedPath = keep;
+    const a = rows.find((x) => x.path === keep);
+    if (a) {
+      // 恢复行选中样式
+      document.querySelectorAll("#page-startup tbody tr").forEach((tr) => {
+        const pathCell = tr.children[3]?.getAttribute("title") || tr.children[3]?.textContent;
+        tr.classList.toggle("selected", pathCell === keep || (a.path && pathCell === a.path));
+      });
+      syncBtns(!!a.enabled);
+    } else {
+      selectedPath = null;
+      syncBtns(false);
+    }
+  }
 }
 export function deactivate() { try { hideAll(); } catch (e) {} setTopActions(""); }

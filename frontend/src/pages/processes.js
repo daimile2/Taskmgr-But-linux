@@ -190,6 +190,9 @@ function render() {
       tr.classList.add("selected");
       showMenu(e.clientX, e.clientY, [
         { label: "结束任务(E)", action: async () => { await killProcess(p.pid); refresh(); } },
+        { label: "在线搜索(S)", action: () => {
+          window.open("https://www.bing.com/search?q=" + encodeURIComponent(p.name || ""), "_blank");
+        } },
         { label: "效率模式(M)", action: async () => { await setEfficiency(p.pid, true); refresh(); } },
         { sep: true },
         { label: "资源值(V)", children: [
