@@ -4,6 +4,7 @@ import { getSearchQuery, onSearchChange } from "../components/searchbox.js";
 import { show as showCtx, hideAll } from "../components/ctxmenu.js";
 import { setTopActions } from "../shell.js";
 import { openRunDialog } from "../runDialog.js";
+import { onlineSearch } from "../open.js";
 
 let rows = [];
 /** @type {Record<string, any[]>} */
@@ -154,7 +155,7 @@ function procCtx(e, p) {
     } else if (id === "details") {
       document.querySelector('.nav-item[data-page="details"]')?.click();
     } else if (id === "search") {
-      window.open("https://www.bing.com/search?q=" + encodeURIComponent(p.name || ""), "_blank");
+      onlineSearch(p.name);
     } else if (id === "props") {
       alert(`名称: ${p.name}\nPID: ${p.pid}\n用户: ${p.user}\nCPU: ${(p.cpu||0).toFixed(1)}%\n内存: ${fmtBytes(p.memory)}`);
     }

@@ -2,6 +2,7 @@ import { getProcesses, getStats, killProcess, setEfficiency } from "../api.js";
 import { getSearchQuery, onSearchChange } from "../components/searchbox.js";
 import { setTopActions } from "../shell.js";
 import { openRunDialog } from "../runDialog.js";
+import { onlineSearch } from "../open.js";
 import { show as showMenu, hideAll } from "../components/ctxmenu.js";
 
 let processes = [];
@@ -190,9 +191,7 @@ function render() {
       tr.classList.add("selected");
       showMenu(e.clientX, e.clientY, [
         { label: "结束任务(E)", action: async () => { await killProcess(p.pid); refresh(); } },
-        { label: "在线搜索(S)", action: () => {
-          window.open("https://www.bing.com/search?q=" + encodeURIComponent(p.name || ""), "_blank");
-        } },
+        { label: "在线搜索(S)", action: () => { onlineSearch(p.name); } },
         { label: "效率模式(M)", action: async () => { await setEfficiency(p.pid, true); refresh(); } },
         { sep: true },
         { label: "资源值(V)", children: [

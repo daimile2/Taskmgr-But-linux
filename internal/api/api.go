@@ -283,7 +283,15 @@ func Handler() http.Handler {
 		run.QuitDialog()
 	})
 
-		mux.HandleFunc("/app/quit", func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("/open-url", func(w http.ResponseWriter, r *http.Request) {
+		p := parseParams(r)
+		writeJSON(w, map[string]string{"result": run.OpenURL(p["url"])})
+	})
+	mux.HandleFunc("/open-dir", func(w http.ResponseWriter, r *http.Request) {
+		p := parseParams(r)
+		writeJSON(w, map[string]string{"result": run.OpenDir(p["path"])})
+	})
+	mux.HandleFunc("/app/quit", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]string{"ok": "1"})
 		go func() {
 			time.Sleep(50 * time.Millisecond)

@@ -4,6 +4,7 @@ import { getSearchQuery, onSearchChange } from "../components/searchbox.js";
 import { show as showCtx, hideAll } from "../components/ctxmenu.js";
 import { setTopActions } from "../shell.js";
 import { openRunDialog } from "../runDialog.js";
+import { onlineSearch } from "../open.js";
 
 let rows = [];
 let selected = null;
@@ -145,7 +146,7 @@ function render() {
           await api.serviceAction(id, name);
           await refresh();
         } else if (id === "search") {
-          window.open("https://www.bing.com/search?q=" + encodeURIComponent(name), "_blank");
+          onlineSearch(name);
         }
       });
     });

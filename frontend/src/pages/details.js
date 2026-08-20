@@ -2,6 +2,7 @@ import { api } from "../api.js";
 import { getSearchQuery, onSearchChange } from "../components/searchbox.js";
 import { setTopActions } from "../shell.js";
 import { openRunDialog } from "../runDialog.js";
+import { onlineSearch } from "../open.js";
 // header % via api.getStats
 import { show as showMenu, hideAll } from "../components/ctxmenu.js";
 
@@ -157,7 +158,7 @@ async function detailsCtxAction(id, p) {
     }
     if (id === "search") {
       const q = encodeURIComponent(p.name || String(pid));
-      window.open("https://www.bing.com/search?q=" + q, "_blank");
+      onlineSearch(q);
       return;
     }
     if (id === "props") {

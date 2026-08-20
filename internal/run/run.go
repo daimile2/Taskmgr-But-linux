@@ -198,3 +198,39 @@ func MoveBy(dx, dy int) {
 		return
 	}
 }
+
+// OpenURL opens url with the system default handler (browser etc).
+func OpenURL(url string) string {
+	url = strings.TrimSpace(url)
+	if url == "" {
+		return "空链接"
+	}
+	c := exec.Command("xdg-open", url)
+	c.Stdout = nil
+	c.Stderr = nil
+	if err := c.Start(); err != nil {
+		return err.Error()
+	}
+	_ = c.Process.Release()
+	return "ok"
+}
+
+// OpenDir opens a directory in the file manager.
+func OpenDir(dir string) string {
+	dir = strings.TrimSpace(dir)
+	if dir == "" {
+		return "空路径"
+	}
+	if st, err := os.Stat(dir); err != nil || !st.IsDir() {
+		// try parent
+		dir = filepath.Dir(dir)
+	}
+	c := exec.Command("xdg-open", dir)
+	c.Stdout = nil
+	c.Stderr = nil
+	if err := c.Start(); err != nil {
+		return err.Error()
+	}
+	_ = c.Process.Release()
+	return "ok"
+}

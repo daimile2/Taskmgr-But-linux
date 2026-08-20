@@ -4,6 +4,7 @@ import { getSearchQuery, onSearchChange } from "../components/searchbox.js";
 import { show as showCtx, hideAll } from "../components/ctxmenu.js";
 import { setTopActions } from "../shell.js";
 import { openRunDialog } from "../runDialog.js";
+import { onlineSearch, openDir } from "../open.js";
 
 let rows = [];
 
@@ -138,8 +139,8 @@ function render() {
           await (api.setStartup || api.setStartupEnabled)(a.path, next);
           await refresh();
         } else if (id === "open") {
-          const dir = (a.path || "").replace(/\/[^/]+$/, "") || "/";
-          window.open("file://" + dir);
+          const dir = (a.path || "").replace(/\/[^/]+$/, "") || (a.exec || "").replace(/\s.*/, "");
+          openDir(dir);
         } else if (id === "search") {
           onlineSearch(a.name);
         } else if (id === "props") {
@@ -163,12 +164,6 @@ function syncBtns(enabled) {
 function showProps(a) {
   if (!a) return;
   alert(`名称: ${a.name}\n状态: ${a.enabled ? "已启用" : "已禁用"}\n命令: ${a.exec}\n路径: ${a.path}`);
-}
-
-function onlineSearch(name) {
-  const q = (name || "").trim();
-  if (!q) return;
-  window.open("https://www.bing.com/search?q=" + encodeURIComponent(q), "_blank");
 }
 
 export function activate() {
@@ -251,8 +246,7 @@ export function activate() {
         const path = selectedPath;
         const a = rows.find(x => x.path === path);
         if (id === "open" && a) {
-          const dir = (a.path || "").replace(/\/[^/]+$/, "") || "/";
-          window.open("file://" + dir);
+          openDir((a.path || "").replace(/\/[^/]+$/, "") || a.path);
         } else if (id === "search" && a) {
           onlineSearch(a.name);
         }
