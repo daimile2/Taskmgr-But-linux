@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  # no-op stubs so wails3 task common:* doesn't fail hard
+  install:frontend:deps:
+    desc: "No frontend package manager (static JS)"
+    cmds:
+      - echo "skip frontend deps (plain static frontend)"
+
+  build:frontend:
+    desc: "No frontend build step needed"
+    cmds:
+      - echo "skip frontend build (assets embedded via go:embed)"
+
+  dev:frontend:
+    desc: "No vite/dev server for static frontend"
+    cmds:
+      - echo "skip frontend dev server"

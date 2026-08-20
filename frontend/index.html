@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>任务管理器</title>
+  <link rel="stylesheet" href="/src/styles/app.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 全宽自定义标题栏（无边框模式下拖拽 + 窗口按钮） -->
+    <header class="titlebar" id="titlebar">
+      <div class="titlebar-left">
+        <button type="button" id="btn-sidebar-toggle-title" class="titlebar-hamburger" title="菜单" aria-label="菜单">
+          <img width="16" height="16" class="nav-ico" src="/src/icons/class.png" alt=""/>
+        </button>
+        <div class="app-title">
+          <img width="18" height="18" class="brand-ico" src="/src/icons/task-icon.png" alt=""/>
+          <span class="brand-text">任务管理器</span>
+        </div>
+      </div>
+      <div class="search-wrap" id="search-wrap">
+        <button type="button" id="btn-search-toggle" class="search-toggle" title="搜索" aria-label="搜索">
+          <img width="16" height="16" class="search-ico" src="/src/icons/search.png" alt=""/>
+        </button>
+        <input id="search" type="search" placeholder="搜索名称、用户或 PID" />
+      </div>
+      <div class="window-controls">
+        <button class="win-btn" id="btn-min" title="最小化">
+          <svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="5" width="8" height="2" fill="currentColor"/></svg>
+        </button>
+        <button class="win-btn" id="btn-max" title="最大化">
+          <svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        </button>
+        <button class="win-btn win-btn-close" id="btn-close" title="关闭">
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="body-row">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <button type="button" id="btn-sidebar-toggle" class="sidebar-toggle" title="折叠侧栏">
+            <img width="16" height="16" class="nav-ico" src="/src/icons/class.png" alt=""/>
+          </button>
+        </div>
+        <nav class="nav" id="nav">
+          <button type="button" class="nav-item active" data-page="processes"><img width="16" height="16" class="nav-ico" src="/src/icons/process.png" alt=""/><span class="nav-text">进程</span></button>
+          <button type="button" class="nav-item" data-page="performance"><img width="16" height="16" class="nav-ico" src="/src/icons/performance.png" alt=""/><span class="nav-text">性能</span></button>
+          <button type="button" class="nav-item" data-page="history"><img width="16" height="16" class="nav-ico" src="/src/icons/app-history.png" alt=""/><span class="nav-text">应用历史记录</span></button>
+          <button type="button" class="nav-item" data-page="startup"><img width="16" height="16" class="nav-ico" src="/src/icons/startup.png" alt=""/><span class="nav-text">启动应用</span></button>
+          <button type="button" class="nav-item" data-page="users"><img width="16" height="16" class="nav-ico" src="/src/icons/users.png" alt=""/><span class="nav-text">用户</span></button>
+          <button type="button" class="nav-item" data-page="details"><img width="16" height="16" class="nav-ico" src="/src/icons/details.png" alt=""/><span class="nav-text">详细信息</span></button>
+          <button type="button" class="nav-item" data-page="services"><img width="16" height="16" class="nav-ico" src="/src/icons/services.png" alt=""/><span class="nav-text">服务</span></button>
+        </nav>
+        <div class="sidebar-footer">
+          <button type="button" class="nav-item" data-page="settings"><img width="16" height="16" class="nav-ico" src="/src/icons/settings.png" alt=""/><span class="nav-text">设置</span></button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="page-head-row">
+          <div class="page-title" id="page-title-text">进程</div>
+          <div class="top-actions" id="top-actions"></div>
+        </div>
+        <div class="page-host" id="page-host">
+          <section class="page active" id="page-processes"></section>
+          <section class="page" id="page-performance"></section>
+          <section class="page" id="page-history"></section>
+          <section class="page" id="page-startup"></section>
+          <section class="page" id="page-users"></section>
+          <section class="page" id="page-details"></section>
+          <section class="page" id="page-services"></section>
+          <section class="page" id="page-settings"></section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="/wails/runtime.js"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

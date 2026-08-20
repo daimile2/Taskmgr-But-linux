@@ -1,0 +1,41 @@
+version: '3'
+
+vars:
+  APP_NAME: taskmgr-re
+  BIN_DIR: bin
+
+tasks:
+  build:
+    desc: Build the application for current platform
+    cmds:
+      - mkdir -p {{.BIN_DIR}}
+      - go build -o {{.BIN_DIR}}/{{.APP_NAME}} .
+    sources:
+      - "**/*.go"
+      - go.mod
+    generates:
+      - "{{.BIN_DIR}}/{{.APP_NAME}}"
+
+  run:
+    desc: Run the built application
+    deps: [build]
+    cmds:
+      - ./{{.BIN_DIR}}/{{.APP_NAME}}
+
+  # wails3 build / wails3 package 会调这些
+  linux:build:
+    desc: Build for Linux
+    cmds:
+      - task: build
+
+  linux:run:
+    desc: Run on Linux
+    cmds:
+      - task: run
+
+  # 简单 package：只产出二进制
+  package:
+    desc: Production build
+    cmds:
+      - mkdir -p {{.BIN_DIR}}
+      - go build -ldflags="-s -w" -o {{.BIN_DIR}}/{{.APP_NAME}} .

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新建任务</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      font-size: 13px;
+      color: #1a1a1a;
+      background: #ffffff;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    input, textarea, #cmd {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      border: 1px solid #a0a0a0;
+      background: #ffffff;
+    }
+    /* 与主窗口 .titlebar 相同：整条栏可拖 */
+    .titlebar {
+      height: 36px;
+      flex: 0 0 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0 0 12px;
+      background: linear-gradient(180deg, #f0f4fa 0%, #e4eaf3 100%);
+      border-bottom: 1px solid #c0c8d4;
+      --wails-draggable: drag;
+    }
+    /* 左侧标题区：与主窗口 .app-title 一样保持 drag */
+    .app-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 100%;
+      flex: 1;
+      min-width: 0;
+      --wails-draggable: drag;
+      font-size: 12px;
+      color: #1a1a1a;
+    }
+    .app-title img {
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+    .app-title span { pointer-events: none; }
+    /* 关闭按钮：与主窗口 window-controls 一样 no-drag */
+    .window-controls {
+      display: flex;
+      height: 100%;
+      --wails-draggable: no-drag;
+    }
+    .btn-close {
+      width: 46px;
+      height: 100%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+      --wails-draggable: no-drag;
+      border-radius: 0;
+    }
+    .btn-close:hover { background: #e81123; color: #fff; }
+    .body {
+      flex: 1;
+      padding: 18px 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      --wails-draggable: no-drag;
+    }
+    .hint-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .hint-row img {
+      width: 32px; height: 32px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      pointer-events: none;
+    }
+    .hint-text {
+      color: #1a1a1a;
+      line-height: 1.45;
+      font-size: 12.5px;
+    }
+    .open-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      --wails-draggable: no-drag;
+    }
+    .open-row label { flex: 0 0 auto; white-space: nowrap; }
+    .combo {
+      flex: 1;
+      display: flex;
+      position: relative;
+      min-width: 0;
+      --wails-draggable: no-drag;
+    }
+    #cmd {
+      flex: 1;
+      min-width: 0;
+      height: 26px;
+      border: 1px solid #7eb4ea;
+      border-right: none;
+      border-radius: 2px 0 0 2px;
+      padding: 2px 8px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+      color: #1a1a1a;
+    }
+    #cmd:focus { border-color: #2b88d8; box-shadow: inset 0 0 0 1px #2b88d8; }
+    #btn-hist {
+      width: 22px;
+      height: 26px;
+      border: 1px solid #7eb4ea;
+      border-radius: 0 2px 2px 0;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      color: #333;
+      --wails-draggable: no-drag;
+    }
+    #btn-hist:hover { background: #e8f2fc; }
+    #hist-list {
+      display: none;
+      position: absolute;
+      left: 0; right: 0; top: 26px;
+      z-index: 20;
+      background: #fff;
+      border: 1px solid #ababab;
+      max-height: 160px;
+      overflow: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    #hist-list.show { display: block; }
+    #hist-list div {
+      padding: 4px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #hist-list div:hover { background: #cce4f7; }
+    .admin-row {
+      padding-left: 42px;
+      --wails-draggable: no-drag;
+    }
+    .admin-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 10px 16px 14px;
+      --wails-draggable: no-drag;
+    }
+    .footer button {
+      min-width: 78px;
+      height: 28px;
+      padding: 0 14px;
+      border: 1px solid #adadad;
+      border-radius: 2px;
+      background: #e1e1e1;
+      color: #1a1a1a;
+      font-size: 12.5px;
+      cursor: pointer;
+      --wails-draggable: no-drag;
+    }
+    .footer button:hover { background: #d0d0d0; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 结构对齐主窗口 titlebar + app-title + window-controls -->
+    <header class="titlebar" id="titlebar">
+      <div class="app-title">
+        <img src="/src/icons/task-icon.svg" alt="" />
+        <span>新建任务</span>
+      </div>
+      <div class="window-controls">
+        <button type="button" class="btn-close" id="btn-x" title="关闭">✕</button>
+      </div>
+    </header>
+    <div class="body">
+      <div class="hint-row">
+        <img src="/src/icons/task-icon.svg" alt="" />
+        <div class="hint-text">系统将根据你所键入的名称，为你打开相应的程序、文件夹、文档或 Internet 资源。</div>
+      </div>
+      <div class="open-row">
+        <label for="cmd">打开(O):</label>
+        <div class="combo">
+          <input id="cmd" type="text" spellcheck="false" autocomplete="off" />
+          <button type="button" id="btn-hist" title="历史">▾</button>
+          <div id="hist-list"></div>
+        </div>
+      </div>
+      <div class="admin-row">
+        <label><input type="checkbox" id="admin" /> 以系统管理权限创建此任务。</label>
+      </div>
+    </div>
+    <div class="footer">
+      <button type="button" id="btn-ok">确定</button>
+      <button type="button" id="btn-cancel">取消</button>
+      <button type="button" id="btn-browse">浏览(B)...</button>
+    </div>
+  </div>
+  <script type="module" src="/wails/runtime.js"></script>
+  <script type="module" src="/src/run-dialog.js"></script>
+</body>
+</html>

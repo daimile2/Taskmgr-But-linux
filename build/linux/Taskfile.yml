@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Build Linux binary
+    cmds:
+      - mkdir -p ../../bin
+      - go build -o ../../bin/taskmgr-re ../..
+  run:
+    cmds:
+      - ../../bin/taskmgr-re
+  package:
+    cmds:
+      - task: build

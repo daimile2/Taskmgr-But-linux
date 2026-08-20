@@ -1,0 +1,34 @@
+# Wails v3 project configuration
+info:
+  productName: "任务管理器"
+  productIdentifier: "com.taskmgr.re"
+  productVersion: "0.1.0"
+  companyName: "taskmgr-re"
+  productDescription: "Linux 任务管理器（Wails v3）"
+  productCopyright: "Copyright 2026"
+  productComments: "Windows-style Task Manager for Linux"
+
+# Dev mode file watcher (used by wails3 dev)
+dev_mode:
+  root_path: .
+  log_level: warn
+  debounce: 800
+  ignore:
+    dir:
+      - .git
+      - node_modules
+      - bin
+      - .task
+    file:
+      - .DS_Store
+      - .gitignore
+    watched_extension:
+      - "*.go"
+    git_ignore: true
+  executes:
+    - cmd: go mod tidy
+      type: blocking
+    - cmd: go build -o bin/taskmgr-re .
+      type: blocking
+    - cmd: ./bin/taskmgr-re
+      type: primary
